@@ -31,37 +31,53 @@ async function run() {
     const toyCollection = client.db('toyDB').collection('toy')
 
 
+    // Create Indexing for search
+    const indexKeys = { toyName: 1 };
+    const indexOptions = { name: "toyName" }
 
-    app.get('/all-toys', async(req,res) =>{
-        const result = await toyCollection.find().toArray()
-        res.send(result)
+    const result = await toyCollection.createIndex(indexKeys, indexOptions)
+
+
+    app.get('/getToyByName/:text', async (req, res) => {
+      const searchText = req.params.text;
+      const result = await toyCollection.find({
+        $or: [
+          { toyName: { $regex: searchText, $options: 'i' } }
+        ]
+      }).toArray()
+      res.send(result)
     })
 
-    app.get('/all-toys/:id', async(req,res) =>{
+    app.get('/all-toys', async (req, res) => {
+      const result = await toyCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.get('/all-toys/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await toyCollection.findOne(query)
       res.send(result)
     })
 
-    app.get('/my-toys/:email', async(req,res) =>{
-        const email = req.params.email
-        const result = await toyCollection.find({email: email}).toArray()
-        res.send(result)
+    app.get('/my-toys/:email', async (req, res) => {
+      const email = req.params.email
+      const result = await toyCollection.find({ email: email }).toArray()
+      res.send(result)
     })
 
-    app.post('/add-toy', async(req,res) =>{
-        const body = req.body;
-        const result = await toyCollection.insertOne(body)
-        res.send(result)
+    app.post('/add-toy', async (req, res) => {
+      const body = req.body;
+      const result = await toyCollection.insertOne(body)
+      res.send(result)
     })
 
-    app.put('/my-toys/:id', async(req,res) =>{
+    app.put('/my-toys/:id', async (req, res) => {
       const id = req.params.id;
       const body = req.body
-      const filter = {_id : new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const updatedDoc = {
-        $set : {
+        $set: {
           price: body.price,
           availableQuantity: body.availableQuantity,
           description: body.description
@@ -71,9 +87,9 @@ async function run() {
       res.send(result)
     })
 
-    app.delete('/my-toys/:id', async(req,res) =>{
+    app.delete('/my-toys/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await toyCollection.deleteOne(query);
       res.send(result)
     })
@@ -91,10 +107,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', (req,res) =>{
-    res.send('Toy Server Is Running')
+app.get('/', (req, res) => {
+  res.send('Toy Server Is Running')
 })
 
-app.listen(port, () =>{
-    console.log(`Toy server is running on port: ${port}`)
+app.listen(port, () => {
+  console.log(`Toy server is running on port: ${port}`)
 })
