@@ -49,7 +49,7 @@ async function run() {
     })
 
     app.get('/all-toys', async (req, res) => {
-      const result = await toyCollection.find().toArray()
+      const result = await toyCollection.find().limit(20).toArray()
       res.send(result)
     })
 
@@ -70,7 +70,7 @@ async function run() {
 
     app.get('/my-toys/:email', async (req, res) => {
       const email = req.params.email
-      const result = await toyCollection.find({ email: email }).toArray()
+      const result = await toyCollection.find({ email: email }).sort({price: -1}).toArray()
       res.send(result)
     })
 
@@ -88,7 +88,13 @@ async function run() {
         $set: {
           price: body.price,
           availableQuantity: body.availableQuantity,
-          description: body.description
+          description: body.description,
+          toyName: body.toyName,
+          sellerName: body.sellerName,
+          photoURL: body.photoURL,
+          email: body.email,
+          rating: body.rating,
+          subCategory: body.subCategory
         }
       }
       const result = await toyCollection.updateOne(filter, updatedDoc)
