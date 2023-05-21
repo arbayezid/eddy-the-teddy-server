@@ -32,10 +32,10 @@ async function run() {
 
 
     // Create Indexing for search
-    const indexKeys = { toyName: 1 };
-    const indexOptions = { name: "toyName" }
+    // const indexKeys = { toyName: 1 };
+    // const indexOptions = { name: "toyName" }
 
-    const result = await toyCollection.createIndex(indexKeys, indexOptions)
+    // const result = await toyCollection.createIndex(indexKeys, indexOptions)
 
 
     app.get('/getToyByName/:text', async (req, res) => {
@@ -62,15 +62,15 @@ async function run() {
     })
 
 
-    app.get('/category-toys/:text', async(req,res) =>{
+    app.get('/category-toys/:text', async (req, res) => {
       const subCategory = req.params.text;
-      const result = await toyCollection.find({subCategory: subCategory}).toArray()
+      const result = await toyCollection.find({ subCategory: subCategory }).toArray()
       res.send(result)
     })
 
     app.get('/my-toys/:email', async (req, res) => {
       const email = req.params.email
-      const result = await toyCollection.find({ email: email }).sort({price: -1}).toArray()
+      const result = await toyCollection.find({ email: email }).sort({ price: -1 }).toArray()
       res.send(result)
     })
 
